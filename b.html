@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Ruang Galau</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+    text-align: center;
+}
+
+.login {
+    margin-top: 100px;
+}
+
+input, textarea {
+    width: 250px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #e94560;
+    color: white;
+    cursor: pointer;
+    margin: 5px;
+}
+
+li {
+    background: rgba(255,255,255,0.1);
+    margin: 5px;
+    padding: 8px;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+    <h2>Login Dulu 😔</h2>
+    <input type="text" id="username" placeholder="Masukkan nama...">
+    <button onclick="login()">Masuk</button>
+</div>
+
+<!-- APP -->
+<div class="container" id="app" style="display:none;">
+    <h1>💔 Ruang Galau</h1>
+    <p id="userText"></p>
+
+    <textarea id="input" placeholder="Tulis isi hati..."></textarea><br>
+    <button onclick="kirim()">Kirim</button>
+    <button onclick="logout()">Logout</button>
+
+    <h3>📜 Curhatan</h3>
+    <ul id="list"></ul>
+</div>
+
+<script>
+
+// cek login
+window.onload = function () {
+    const user = localStorage.getItem("user");
+    if (user) masukApp(user);
+
+    loadData();
+};
+
+// login
+function login() {
+    const username = document.getElementById("username").value;
+
+    if (username.trim() === "") {
+        alert("Isi dulu nama!");
+        return;
+    }
+
+    localStorage.setItem("user", username);
+    masukApp(username);
+}
+
+// masuk app
+function masukApp(user) {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("userText").innerText = "Halo, " + user;
+}
+
+// logout
+function logout() {
+    localStorage.removeItem("user");
+    location.reload();
+}
+
+// kirim curhatan
+function kirim() {
+    const input = document.getElementById("input");
+    const list = document.getElementById("list");
+    const user = localStorage.getItem("user");
+
+    if (input.value.trim() === "") {
+        alert("Isi dulu curhatannya!");
+        return;
+    }
+
+    const li = document.createElement("li");
+    li.innerText = user + ": " + input.value;
+    list.appendChild(li);
+
+    let data = JSON.parse(localStorage.getItem("curhat")) || [];
+    data.push({ user: user, text: input.value });
+    localStorage.setItem("curhat", JSON.stringify(data));
+
+    input.value = "";
+}
+
+// load data
+function loadData() {
+    const data = JSON.parse(localStorage.getItem("curhat")) || [];
+    const list = document.getElementById("list");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    data.forEach(item => {
+        const li = document.createElement("li");
+        li.innerText = item.user + ": " + item.text;
+        list.appendChild(li);
+    });
+}
+
+</script>
+
+</body>
+</html>
